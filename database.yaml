@@ -1,0 +1,162 @@
+models:
+  ContactPoint:
+    id: uuid primary
+    created: nullable timestamp
+    modified: nullable timestamp
+    deleted: tinyInteger nullable
+    createdBy: String:36 nullable
+    modifiedBy: String:36 nullable
+    url: String:500 nullable
+    additionalType: String:36
+    name: String:100 nullable
+    image: String:500 nullable
+    description: String:2000 nullable
+    email: String:256 nullable
+    faxnumber: String:36 nullable
+    telephone: String:36 nullable
+  Demand:
+    id: uuid
+    created: nullable timestamp
+    modified: nullable timestamp
+    deleted: tinyInteger nullable
+    createdBy: String:36 nullable
+    modifiedBy: String:36 nullable
+    url: String:500 nullable
+    additionalType: String:36 nullable
+    name: String:100 nullable
+    image: String:500 nullable
+    description: String:2000 nullable
+    availability:  String:500 nullable
+    availabilityStarts: nullable timestamp
+    availabilityEnds: nullable timestamp
+    price: String:64 nullable
+    priceCurrency: String:10 nullable
+    relationships:
+      hasOne: trip, persona
+  Offer:
+    id: uuid
+    created: nullable timestamp
+    modified: nullable timestamp
+    deleted: tinyInteger nullable
+    createdBy: String:36 nullable
+    modifiedBy: String:36 nullable
+    url: String:500 nullable
+    additionalType: String:36 nullable
+    name: String:100 nullable
+    image: String:500 nullable
+    description: String:2000 nullable
+    availability: String:500 nullable
+    availabilityStarts: nullable timestamp
+    availabilityEnds: nullable timestamp
+    price: String:64 nullable
+    priceCurrency: String:10 nullable
+    relationships:
+      hasOne: trip, persona
+  Participation:
+    id: uuid primary
+    created: nullable timestamp
+    modified: nullable timestamp
+    deleted: tinyInteger nullable
+    createdBy: String:36 nullable
+    modifiedBy: String:36 nullable
+    url: String:500 nullable
+    additionalType: String:36 nullable
+    name: String:100 nullable
+    image: String:500 nullable
+    description: String:2000 nullable
+    role: string:40 nullable
+    status: string:40 nullable
+    relationships:
+      hasOne: persona
+  Persona:
+    id: uuid primary
+    created: nullable timestamp
+    modified: nullable timestamp
+    deleted: tinyInteger nullable
+    createdBy: String:36 nullable
+    modifiedBy: String:36 nullable
+    url: String:500 nullable
+    additionalType: String:36 nullable
+    name: String:100 nullable
+    image: String:500 nullable
+    description: String:2000 nullable
+    familyName: String:100 nullable
+    gender: String:10 nullable
+    relationships:
+      belongstoMany: contactPoint
+  Transport:
+    id: uuid primary
+    created: nullable timestamp
+    modified: nullable timestamp
+    deleted: tinyInteger nullable
+    createdBy: String:36 nullable
+    modifiedBy: String:36 nullable
+    url: String:500 nullable
+    additionalType: String:36 nullable
+    name: String:100 nullable
+    image: String:500 nullable
+    description: String:2000 nullable
+    transportType: String:20 nullable
+    seatingCapacity: Integer nullable
+    cargoVolume: String:10 nullable
+    owner: id nullable
+    operator: id nullable
+    relationships:
+      hasOne: owner, operator
+  Trip:
+    id: uuid primary
+    created: nullable timestamp
+    modified: nullable timestamp
+    deleted: tinyInteger nullable
+    createdBy: String:36 nullable
+    modifiedBy: String:36 nullable
+    url: String:500 nullable
+    additionalType: String:36 nullable
+    name: String:100 nullable
+    image: String:500 nullable
+    description: String:2000 nullable
+    arrivalTime: nullable timestamp
+    availableSeats: integer nullable
+    connector: string
+    smoking: string nullable
+    animals: string nullable
+    relationships:
+      hasOne: offer, demand, transport, participation
+  GeoLocation:
+    id: uuid primary
+    latitude: double
+    longitude: double
+  SearchRadius:
+    id: uuid primary
+    radius: integer
+    relationships:
+      hasOne:
+        location
+  TimeRange:
+    id: uuid primary
+    time: nullable timestamp
+    toleranceInDays: integer nullable
+  Search:
+    id: uuid primary
+    tripTypes: String:10 nullable
+    reoccurDays: String:10 nullable
+    smoking: String:10 nullable
+    animals: String:10 nullable
+    transportTypes: String:10 nullable
+    baggage: String:10 nullable
+    gender: String:10 nullable
+    organizations: String:10 nullable
+    availabilityStarts: String:10 nullable
+    availabilityEnds: String:10 nullable
+    relationships:
+      hasOne:
+        startPoint, endPoint, departure, arrival
+
+controllers:
+  Trip:
+    show:
+      find: trip
+    search:
+      find: trip
+    search_id:
+      find: trip
