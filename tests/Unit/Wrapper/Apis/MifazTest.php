@@ -40,7 +40,7 @@ class MifazTest extends TestCase
 
         $this->assertEquals(1, count($entries));
         $this->assertEquals(8, $entries[0]['startID']);
-        $this->assertEquals("https://api.mifaz.de/request/?f=getEntries&startlongitude=11.574&startlatitude=48.139&goallatitude=52.522&goallongitude=13.41", $lastUri);
+        $this->assertEquals("https://api.mifaz.de/request/?radius=10&tolerance=0&f=getEntries&startlongitude=11.574&startlatitude=48.139&goallatitude=52.522&goallongitude=13.41", $lastUri);
 
     }
 }

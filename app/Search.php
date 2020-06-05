@@ -36,12 +36,12 @@ class Search extends Model
 
     public function startPoint()
     {
-        return $this->hasOne(\App\GeoLocation::class);
+        return $this->hasOne(\App\SearchRadius::class);
     }
 
     public function endPoint()
     {
-        return $this->hasOne(\App\GeoLocation::class);
+        return $this->hasOne(\App\SearchRadius::class);
     }
 
     public function departure()
@@ -57,6 +57,13 @@ class Search extends Model
     public function trips()
     {
         return $this->hasMany(Trip::class);
+    }
+
+    public function getDepartureRange(): Array
+    {
+        $tolerance = $this->departure->toleranceInDays;
+        return [$this->departure->time->copy()->add($tolerance * -1, 'day')->startOfDay(),
+                $this->departure->time->copy()->add($tolerance, 'day')->endOfDay()];
     }
 //
 //    public function toJson($options = 0)
