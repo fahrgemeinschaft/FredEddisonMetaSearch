@@ -1,3 +1,7 @@
+echo "Install additional extensions"
+
+id
+
 yum -y install sclo-php73-php-pecl-redis5 sclo-php73-php-phpiredis
 yum clean all
 
