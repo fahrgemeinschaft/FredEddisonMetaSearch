@@ -1,0 +1,4 @@
+yum -y install sclo-php73-php-pecl-redis5 sclo-php73-php-phpiredis
+yum clean all
+
+/usr/libexec/s2i/assemble
