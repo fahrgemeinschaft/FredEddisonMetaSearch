@@ -46,7 +46,7 @@ class SearchWrapper
             'trip_start',
             $search->startPoint->longitude,
             $search->startPoint->latitude,
-            6000, // TODO add parameter for search radius
+            $search->startPoint->radius,
             "km"
         );
 
@@ -55,7 +55,7 @@ class SearchWrapper
             'trip_end',
             $search->endPoint->longitude,
             $search->endPoint->latitude,
-            6000,
+            $search->endPoint->radius,
             "km"
         );
 

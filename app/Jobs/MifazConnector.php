@@ -62,10 +62,12 @@ class MifazConnector implements ShouldQueue
         $start = $this->search->startPoint->location;
         $end = $this->search->endPoint->location;
 
+        $date = Carbon::createFromTimeString($search->departure['time']);
+
         $options = [
-            'tolerance' => $search->departure->toleranceInDays,
-            'journeydate' => $search->departure->time->toDateString(),
-            'radius' => $this->search->startPoint->radius
+            'tolerance' => $search->departure['toleranceInDays'],
+            'journeydate' => $date->toDateString(),
+            'radius' => $this->search->startPoint['radius']
         ];
 
         $entries = $client->getEntries($start['latitude'], $start['longitude'], $end['latitude'], $end['longitude'], $options);
