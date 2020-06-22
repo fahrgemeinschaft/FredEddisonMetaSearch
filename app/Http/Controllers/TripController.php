@@ -52,12 +52,17 @@ class TripController extends Controller
             $search->departure = $data['departure'];
 
             if (!isset($data['startPoint']['radius']))
-                $radius = 50;
+                $radiusStartPoint = 50;
             else
-                $radius = $data['startPoint']['radius'];
-            $startPoint = new SearchRadius(['radius' => $radius]);
+                $radiusStartPoint = $data['startPoint']['radius'];
+            if (!isset($data['endPoint']['radius']))
+                $radiusEndPoint = 50;
+            else
+                $radiusEndPoint = $data['startPoint']['radius'];
+
+            $startPoint = new SearchRadius(['radius' => $radiusStartPoint]);
             $startPoint->setAttribute('location', new GeoLocation($data['startPoint']['location']));
-            $endPoint = new SearchRadius(['radius' => $data['endPoint']['radius']]);
+            $endPoint = new SearchRadius(['radius' => $radiusEndPoint]);
             $endPoint->setAttribute('location', new GeoLocation($data['endPoint']['location']));
 
             $id = Uuid::uuid4();
