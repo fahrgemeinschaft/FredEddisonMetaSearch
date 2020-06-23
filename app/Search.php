@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Traits\UsesUuid;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -59,11 +60,14 @@ class Search extends Model
         return $this->hasMany(Trip::class);
     }
 
-    public function getDepartureRange(): Array
+    public function getDepartureRange(): array
     {
-        $tolerance = $this->departure->toleranceInDays;
-        return [$this->departure->time->copy()->add($tolerance * -1, 'day')->startOfDay(),
-                $this->departure->time->copy()->add($tolerance, 'day')->endOfDay()];
+        $tolerance = $this->departure['toleranceInDays'];
+
+        $rangeStart = Carbon::createFromTimeString($this->departure['time'])->addDays($tolerance * -1)->startOfDay();
+        $rangeEnd = Carbon::createFromTimeString($this->departure['time'])->addDays($tolerance)->startOfDay();
+
+        return [$rangeStart, $rangeEnd];
     }
 //
 //    public function toJson($options = 0)

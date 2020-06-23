@@ -44,17 +44,16 @@ class SearchWrapper
 
         $trip_start = Redis::geoRadius(
             'trip_start',
-            $search->startPoint->longitude,
-            $search->startPoint->latitude,
+            $search->startPoint->location->longitude,
+            $search->startPoint->location->latitude,
             $search->startPoint->radius,
             "km"
         );
 
-
         $trip_end = Redis::geoRadius(
             'trip_end',
-            $search->endPoint->longitude,
-            $search->endPoint->latitude,
+            $search->endPoint->location->longitude,
+            $search->endPoint->location->latitude,
             $search->endPoint->radius,
             "km"
         );
