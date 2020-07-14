@@ -24,13 +24,15 @@ class Bessermitfahren
     public function getEntries($startLat, $startLng, $endLat, $endLng, $options = []): Collection
     {
         $params = ['from' => $startLat . ',' . $startLng, 'to' => $endLat . ',' . $endLng];
-        $options = array_merge(['' => $this->key], $options);
         $options = array_merge(self::DEFAULT_OPTIONS, $options);
         $params =  array_filter(array_merge($options, $params), function($value) { return !is_null($value) && $value !== ''; });
-
-        $response = $this->client->get(['',
-            'query' => $params
+        $response = $this->client->get('/'.$this->key, [
+            'query' => $params,
+            'on_stats' => function (TransferStats $stats) use (&$url) {
+                $url = $stats->getEffectiveUri();
+            }
         ]);
+        dump($url);
 
         $this->lastResponse = $response;
         $content = (string) $response->getBody();
