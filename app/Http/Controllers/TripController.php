@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AsyncPageTrip;
 use App\GeoLocation;
+use App\Jobs\BessermitfahrenConnector;
 use App\Jobs\BlablacarConnector;
 use App\Jobs\MifazConnector;
 use App\PageResponse;
@@ -81,6 +82,7 @@ class TripController extends Controller
         // dispatch connectors
         MifazConnector::dispatchNow($search);
         BlablacarConnector::dispatchNow($search);
+        BessermitfahrenConnector::dispatchNow($search);
 
         // get quick results
         $results = SearchWrapper::find($search->id);
