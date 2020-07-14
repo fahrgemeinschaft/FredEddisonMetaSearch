@@ -19,7 +19,6 @@ class TripControllerTest extends TestCase
     public function show_behaves_as_expected()
     {
         $trip = factory(Trip::class)->create();
-        $trip = factory(Trip::class)->create();
 
         $response = $this->get(route('trip.show', $trip));
     }
