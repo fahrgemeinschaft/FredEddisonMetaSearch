@@ -28,7 +28,7 @@ class Bessermitfahren
         $options = array_merge(self::DEFAULT_OPTIONS, $options);
         $params =  array_filter(array_merge($options, $params), function($value) { return !is_null($value) && $value !== ''; });
 
-        $response = $this->client->get([
+        $response = $this->client->get(['',
             'query' => $params
         ]);
 
