@@ -70,10 +70,10 @@ class BessermitfahrenConnector implements ShouldQueue
 
     public function convertEntryToTrips($entry, $search): Collection
     {
- dd($entry);
+
         $trips = collect();
         $date = Carbon::createFromTimeString($search->departure['time']);
-        $time = Carbon::createFromFormat('Y.m.d - H: i', $date->format('Y.m.d') . ' - ' . $entry[1][0]);
+        $time = Carbon::createFromFormat('Y.m.d - H: i', $date->format('Y.m.d') . ' - ' . $entry[0][1][0]);
 
         $tripStart = $search->startPoint->location;
         $tripEnd = $search->endPoint->location;
@@ -89,7 +89,7 @@ class BessermitfahrenConnector implements ShouldQueue
         $trip->setAttribute('id', 'bessermitfahren-' .  (string) Str::uuid() . '-' . $time->format('Ymd'));
 
         $offer = new Offer([
-            'url' => $entry[0],
+            'url' => $entry[0][0],
             'name' => '',
             'image' => '',
             'availabilityStarts' => $search->departure['time'],
