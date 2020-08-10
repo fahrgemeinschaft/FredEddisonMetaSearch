@@ -70,6 +70,7 @@ class BessermitfahrenConnector implements ShouldQueue
 
     public function convertEntryToTrips($entry, $search): Collection
     {
+ dd($entry);
         $trips = collect();
         $date = Carbon::createFromTimeString($search->departure['time']);
         $time = Carbon::createFromFormat('Y.m.d - H: i', $date->format('Y.m.d') . ' - ' . $entry[1][0]);
