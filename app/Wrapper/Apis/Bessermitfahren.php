@@ -32,7 +32,7 @@ class Bessermitfahren
                 $url = $stats->getEffectiveUri();
             }
         ]);
-        dump($url);
+        //dump($url);
 
         $this->lastResponse = $response;
         $content = (string) $response->getBody();
