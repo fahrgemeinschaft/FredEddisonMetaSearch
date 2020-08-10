@@ -40,7 +40,6 @@ class Bablacar
                 $url = $stats->getEffectiveUri();
             }
         ]);
-        //dump($url);
         $this->lastResponse = $response;
 
         $content = (string)$response->getBody();
