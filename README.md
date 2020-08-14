@@ -26,4 +26,3 @@ access http://localhost/api/trip/search/ via POST and enter a search object:
 {"startPoint":{"location":{"latitude": 52.522,"longitude":13.411}, "radius": "50"},"endPoint":{"location":{"latitude":53.5511,"longitude": 9.9937}, "radius": "50"},"departure":{"time":"2020-08-14T11:06:04. 690Z","toleranceInDays":2},"arrival":null,"page":{"firstIndex":20,"page":0,"pageSize":20},"reoccurDays":null,"availabilityStarts":"2020-08-14T11:06:04. 690Z", "availabilityEnds":null, "tripTypes":[0], "transportTypes":[0], "animals":2, "baggage":1, "gender":2, "organizations":[], "smoking":3} 
 
 
-Translated with www.DeepL.com/Translator (free version)
