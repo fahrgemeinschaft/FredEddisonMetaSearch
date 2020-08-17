@@ -7,6 +7,7 @@ use App\GeoLocation;
 use App\Jobs\BessermitfahrenConnector;
 use App\Jobs\BlablacarConnector;
 use App\Jobs\MifazConnector;
+use App\Jobs\Ride2GoConnector;
 use App\PageResponse;
 use App\Search;
 use App\SearchRadius;
@@ -36,7 +37,6 @@ class TripController extends Controller
     public function search(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-
 
         if (isset($data['startPoint']) && isset($data['endPoint'])) {
             $search = new Search();
@@ -72,7 +72,6 @@ class TripController extends Controller
             $search->setAttribute('endPoint', $endPoint);
             $search->setAttribute('id', $id);
 
-
         } else {
             $search = factory(Search::class)->make(); //TODO: error handling now factory
         }
@@ -82,7 +81,9 @@ class TripController extends Controller
         // dispatch connectors
         MifazConnector::dispatchNow($search);
         BlablacarConnector::dispatchNow($search);
+        Ride2GoConnector::dispatchNow($search);
         BessermitfahrenConnector::dispatchNow($search);
+
 
         // get quick results
         $results = SearchWrapper::find($search->id);
@@ -90,7 +91,7 @@ class TripController extends Controller
         $asyncResponse = new AsyncPageTrip([
             'id' => $search->id,
             'results' => $results,
-            'page' => new PageResponse([
+            'page' => new PageResponse([ // TODO: calc the Pages
                 'page' => 1,
                 'pageSize' => count($results),
                 'totalCount' => 1,
@@ -115,7 +116,7 @@ class TripController extends Controller
         $asyncResponse = new AsyncPageTrip([
             'id' => $id,
             'results' => $trips,
-            'page' => new PageResponse([
+            'page' => new PageResponse([ // TODO: calc the Pages
                 'page' => 1,
                 'pageSize' => count($trips),
                 'totalCount' => 1,

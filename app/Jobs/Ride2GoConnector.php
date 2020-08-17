@@ -7,8 +7,9 @@ use App\Search;
 use App\Trip;
 use App\Transport;
 use App\GeoLocation;
-use App\Wrapper\Apis\Blablacar;
+use App\Wrapper\Apis\Ride2Go;
 use App\Wrapper\SearchWrapper;
+use App\Wrapper\Apis\Mifaz;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,7 +22,7 @@ use Illuminate\Support\Collection;
 use Carbon\Carbon;
 
 
-class BlablacarConnector implements ShouldQueue
+class Ride2GoConnector implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -46,28 +47,34 @@ class BlablacarConnector implements ShouldQueue
      */
     public function handle()
     {
-        $client = resolve(Blablacar::class);
+        $client = resolve(Ride2Go::class);
         $search = $this->search;
 
         $start = $this->search->startPoint->location;
         $end = $this->search->endPoint->location;
 
-        $date_start = Carbon::createFromTimeString($search->departure['time']);
-        $date_end = Carbon::createFromTimeString($search->departure['time'])->addDays(2);
+        $date = Carbon::createFromTimeString($search->departure['time']);
 
         $options = [
-            'start_date_local' => $date_start->format('Y-m-d\TH:i:s'),
-            'end_date_local' => $date_end->format('Y-m-d\TH:i:s'), // TODO: Endzeit
-            'radius_in_meters' => $this->search->startPoint['radius'],//TODO: in Meter
+            'reoccurDays' => $this->search->reoccurDays ?? [],
+            'smoking' => $this->search->smoking,
+            'animals' => $this->search->animals,
+            'transportTypes' => $this->search->transportTypes,
+            'baggage' => $this->search->baggage,
+            'gender' => $this->search->gender,
+            'organizations' => $this->search->organizations,
+            'availabilityStarts' => $this->search->availabilityStarts,
+            'availabilityEnds' => $this->search->availabilityEnds,
+            'arrival' => $this->search->arrival,
+            'departure' => $this->search->departure,
         ];
-        //TODO Courser durchlaufen
-        $entries = $client->getEntries($start['latitude'], $start['longitude'], $end['latitude'], $end['longitude'], $options);
-        $entries->each(function ($entry) use ($search) {
 
+        $entries = $client->getEntries($start['latitude'], $start['longitude'], $end['latitude'], $end['longitude'], $options);
+
+        $entries->each(function($entry) use ($search)
+        {
             $trips = $this->convertEntryToTrips($entry, $search);
-            $trips->each(function ($trip) {
-                SearchWrapper::insert($trip);
-            });
+            $trips->each(function($trip) { SearchWrapper::insert($trip); });
         });
 
     }
@@ -75,36 +82,40 @@ class BlablacarConnector implements ShouldQueue
     public function convertEntryToTrips($entry, $search): Collection
     {
         $trips = collect();
-        $date = Carbon::create($entry['waypoints'][0]['date_time']);
-        $tripStart = $entry['waypoints'][0]['place'];
-        $tripEnd =$entry['waypoints'][1]['place'];
+
+        $date = Carbon::create($entry['offer']['availabilityEnds']); //TODO: Richtig? Hab ich so aus anderen Stellen deduziert
+
+        $tripStart = $entry['startPoint'];
+        $tripEnd = $entry['endPoint'];
+
         $trip = new Trip([
             'created' => Carbon::now(),
             'modified' => Carbon::now(),
             'startPoint' => new GeoLocation(['latitude' => $tripStart['latitude'], 'longitude' => $tripStart['longitude']]),
             'endPoint' => new GeoLocation(['latitude' => $tripEnd['latitude'], 'longitude' => $tripEnd['longitude']]),
-            'connector' => "BlaBlaCar"
+            'connector' => "Ride2Go"
         ]);
 
-        $trip->setAttribute('id', 'blablacar-' .  (string) Str::uuid() . '-' . $date->format('Ymd'));
+        $trip->setAttribute('id', 'ride2go-' .  (string) Str::uuid() . '-' . $date->format('Ymd'));
 
         $offer = new Offer([
-            'url' => $entry['link'],
-            'name' => '',
-            'image' => '',
-            'availabilityStarts' => $date,
-            'availabilityEnds' => $date
+            'url' => $entry['offer']['url'],
+            'name' => $entry['offer']['name'],
+            'image' => $entry['offer']['image'],
+            'availabilityStarts' => $entry['offer']['availabilityStarts'],
+            'availabilityEnds' => $entry['offer']['availabilityEnds']
         ]);
 
         $transport = new Transport([
-            'transportType' => 'CAR'
+            'transportType' => $entry['transport']['transportType']
         ]);
 
         $trip->setAttribute('offer', $offer);
         $trip->setAttribute('transport', $transport);
-        $offer->setAttribute('tripId', $trip->id);
+        $offer->setAttribute('tripId', $entry['id']);
         $trip->setAttribute('searchId', $search->id->toString());
         $trips->push($trip);
+
         return  $trips;
     }
 }

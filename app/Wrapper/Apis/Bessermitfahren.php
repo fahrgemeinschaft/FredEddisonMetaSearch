@@ -16,8 +16,9 @@ class Bessermitfahren
     private $lastResponse;
     private $key;
 
-    function __construct() {
-        $this->client = resolve(Client::class, ['config' => ['base_uri' => self::API_ENDPOINT ]]);
+    function __construct()
+    {
+        $this->client = resolve(Client::class, ['config' => ['base_uri' => self::API_ENDPOINT, 'http_errors' => false]]);
         $this->key = \config('connector.bessermitfahren_key');
     }
 
@@ -25,16 +26,22 @@ class Bessermitfahren
     {
         $params = ['from' => $startLat . ',' . $startLng, 'to' => $endLat . ',' . $endLng];
         $options = array_merge(self::DEFAULT_OPTIONS, $options);
-        $params =  array_filter(array_merge($options, $params), function($value) { return !is_null($value) && $value !== ''; });
-        $response = $this->client->get('/'.$this->key, [
-            'query' => $params,
-            'on_stats' => function (TransferStats $stats) use (&$url) {
-                $url = $stats->getEffectiveUri();
-            }
-        ]);
+        $params = array_filter(array_merge($options, $params), function ($value) {
+            return !is_null($value) && $value !== '';
+        });
+        try {
+            $response = $this->client->get('/' . $this->key, [
+                'query' => $params,
+                'on_stats' => function (TransferStats $stats) use (&$url) {
+                    $url = $stats->getEffectiveUri();
+                }
+            ]);
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            return false;
+        }
 
         $this->lastResponse = $response;
-        $content = (string) $response->getBody();
+        $content = (string)$response->getBody();
         if (!empty($content)) {
             return collect(json_decode($content, true)['resultset']);
         } else {
