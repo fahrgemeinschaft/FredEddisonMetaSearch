@@ -89,14 +89,15 @@ class Ride2GoConnector implements ShouldQueue
         $tripEnd = $entry['endPoint'];
 
         $trip = new Trip([
-            'created' => Carbon::now(),
-            'modified' => Carbon::now(),
+            'created' =>  $entry['created'],
+            'modified' => $entry['modified'],
             'startPoint' => new GeoLocation(['latitude' => $tripStart['latitude'], 'longitude' => $tripStart['longitude']]),
             'endPoint' => new GeoLocation(['latitude' => $tripEnd['latitude'], 'longitude' => $tripEnd['longitude']]),
-            'connector' => "Ride2Go"
+            'connector' => "Ride2Go",
+            'timestamp' => Carbon::now()
         ]);
 
-        $trip->setAttribute('id', 'ride2go-' .  (string) Str::uuid() . '-' . $date->format('Ymd'));
+        $trip->setAttribute('id', 'ride2go-' . $entry['id']);
 
         $offer = new Offer([
             'url' => $entry['offer']['url'],

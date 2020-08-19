@@ -83,10 +83,11 @@ class BlablacarConnector implements ShouldQueue
             'modified' => Carbon::now(),
             'startPoint' => new GeoLocation(['latitude' => $tripStart['latitude'], 'longitude' => $tripStart['longitude']]),
             'endPoint' => new GeoLocation(['latitude' => $tripEnd['latitude'], 'longitude' => $tripEnd['longitude']]),
-            'connector' => "BlaBlaCar"
+            'connector' => "BlaBlaCar",
+            'timestamp' => Carbon::now()
         ]);
 
-        $trip->setAttribute('id', 'blablacar-' .  (string) Str::uuid() . '-' . $date->format('Ymd'));
+        $trip->setAttribute('id', 'blablacar-' .  md5($entry['link']));
 
         $offer = new Offer([
             'url' => $entry['link'],

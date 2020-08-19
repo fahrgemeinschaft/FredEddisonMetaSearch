@@ -2,6 +2,7 @@
 
 
 namespace App\Wrapper;
+
 use App\Search;
 use App\Trip;
 use Illuminate\Support\Facades\Redis;
@@ -65,12 +66,19 @@ class SearchWrapper
 
         $keys = [];
 
-
         foreach ($ids as $id) {
             $keys[] = "trip:" . $id;
         }
-        if (count($keys) != 0)
-            return array_values(Cache::many($keys));
-        else return [];
+        if (count($keys) != 0) {
+            $trips = collect();
+            foreach (array_filter(array_values(Cache::many($keys))) as $trip) {
+                $trips->push($trip);
+            }
+            $trips->sortByDesc('timestamp');
+            return $trips->toArray();
+
+        } else return [];
     }
+
+
 }

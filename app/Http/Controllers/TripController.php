@@ -16,6 +16,9 @@ use App\Wrapper\SearchWrapper;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 
 class TripController extends Controller
@@ -90,18 +93,8 @@ class TripController extends Controller
 
         $asyncResponse = new AsyncPageTrip([
             'id' => $search->id,
-            'results' => $results,
-            'page' => new PageResponse([ // TODO: calc the Pages
-                'page' => 1,
-                'pageSize' => count($results),
-                'totalCount' => 1,
-                'lastIndex' => 0,
-                'first' => true,
-                'last' => true,
-                'firstIndex' => 0
-            ])
+            'results' => array_slice($results, 0, 20),
         ]);
-
         return new JsonResponse($asyncResponse);
     }
 
@@ -113,20 +106,35 @@ class TripController extends Controller
     {
         $trips = SearchWrapper::find($id);
 
-        $asyncResponse = new AsyncPageTrip([
-            'id' => $id,
-            'results' => $trips,
-            'page' => new PageResponse([ // TODO: calc the Pages
-                'page' => 1,
-                'pageSize' => count($trips),
-                'totalCount' => 1,
-                'lastIndex' => 0,
-                'first' => true,
-                'last' => true,
-                'firstIndex' => 0
-            ])
-        ]);
+        $asyncResponse = $this->paginateWithoutKey($trips, $id);
+
         return new JsonResponse($asyncResponse, 200, [], JSON_UNESCAPED_SLASHES);
     }
 
+    public function paginateWithoutKey($items, $searchid, $perPage = 20, $page = null, $options = [])
+    {
+
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+
+        $lap = new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+
+        return new AsyncPageTrip([
+            'id' => $searchid,
+            'results' => $lap->values(),
+            'page' => new PageResponse([
+                'current_page' => $lap->currentPage(),
+                'first_page_url' => $lap->url(1),
+                'from' => $lap->firstItem(),
+                'last_page' => $lap->lastPage(),
+                'last_page_url' => $lap->url($lap->lastPage()),
+                'next_page_url' => $lap->nextPageUrl(),
+                'per_page' => $lap->perPage(),
+                'prev_page_url' => $lap->previousPageUrl(),
+                'to' => $lap->lastItem(),
+                'total' => $lap->total(),
+            ])
+        ]);
+    }
 }

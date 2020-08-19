@@ -38,7 +38,8 @@ class Trip extends Model
         'participation',
         'search',
         'startPoint',
-        'endPoint'
+        'endPoint',
+        'timestamp'
     ];
 
     /**

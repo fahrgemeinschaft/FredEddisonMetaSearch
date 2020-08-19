@@ -91,7 +91,8 @@ class MifazConnector implements ShouldQueue
                 'modified' => Carbon::create($entry['lastupdate']),
                 'startPoint' => new GeoLocation(['latitude' => $tripStart[0], 'longitude' => $tripStart[1]]),
                 'endPoint' => new GeoLocation(['latitude' => $tripEnd[0], 'longitude' => $tripEnd[1]]),
-                'connector' => "Mifaz"
+                'connector' => "Mifaz",
+                'timestamp' => Carbon::now()
             ]);
 
             $trip->setAttribute('id', 'mifaz-' . $entry['id'] . '-' . $date->format('Ymd'));
