@@ -43,6 +43,8 @@ class SearchWrapper
 
         $search = Cache::get('search:' . $searchId);
 
+        if ($search == null) abort(404);
+        
         $trip_start = Redis::geoRadius(
             'trip_start',
             $search->startPoint->location->longitude,
