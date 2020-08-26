@@ -90,7 +90,7 @@ class TripController extends Controller
 
         // get quick results
         $results = SearchWrapper::find($search->id);
-        $asyncResponse = $this->paginateWithoutKey($results, $id, 20, $request->query->get('page'));
+        $asyncResponse = $this->paginateWithoutKey($results, $search->id, 20, $request->query->get('page'));
 
         return new JsonResponse($asyncResponse);
     }
