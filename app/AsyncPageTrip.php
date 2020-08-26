@@ -12,6 +12,7 @@ class AsyncPageTrip extends Model
     protected $fillable = [
         'id',
         'results',
+        'page',
         'total'
     ];
 

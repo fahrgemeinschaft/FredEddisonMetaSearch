@@ -43,42 +43,44 @@ class SearchWrapper
 
         $search = Cache::get('search:' . $searchId);
 
-        if ($search == null) abort(404);
-        
-        $trip_start = Redis::geoRadius(
-            'trip_start',
-            $search->startPoint->location->longitude,
-            $search->startPoint->location->latitude,
-            $search->startPoint->radius,
-            "km"
-        );
+        if ($search != null) {
 
-        $trip_end = Redis::geoRadius(
-            'trip_end',
-            $search->endPoint->location->longitude,
-            $search->endPoint->location->latitude,
-            $search->endPoint->radius,
-            "km"
-        );
 
-        $start_set = new Set($trip_start);
-        $end_set = new Set($trip_end);
+            $trip_start = Redis::geoRadius(
+                'trip_start',
+                $search->startPoint->location->longitude,
+                $search->startPoint->location->latitude,
+                $search->startPoint->radius,
+                "km"
+            );
 
-        $ids = $start_set->intersect($end_set);
+            $trip_end = Redis::geoRadius(
+                'trip_end',
+                $search->endPoint->location->longitude,
+                $search->endPoint->location->latitude,
+                $search->endPoint->radius,
+                "km"
+            );
 
-        $keys = [];
+            $start_set = new Set($trip_start);
+            $end_set = new Set($trip_end);
 
-        foreach ($ids as $id) {
-            $keys[] = "trip:" . $id;
-        }
-        if (count($keys) != 0) {
-            $trips = collect();
-            foreach (array_filter(array_values(Cache::many($keys))) as $trip) {
-                $trips->push($trip);
+            $ids = $start_set->intersect($end_set);
+
+            $keys = [];
+
+            foreach ($ids as $id) {
+                $keys[] = "trip:" . $id;
             }
-            $trips->sortByDesc('timestamp');
-            return $trips->toArray();
+            if (count($keys) != 0) {
+                $trips = collect();
+                foreach (array_filter(array_values(Cache::many($keys))) as $trip) {
+                    $trips->push($trip);
+                }
+                $trips->sortByDesc('timestamp');
+                return $trips->toArray();
 
+            } else return [];
         } else return [];
     }
 

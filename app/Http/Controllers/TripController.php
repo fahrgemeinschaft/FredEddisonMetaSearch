@@ -90,12 +90,8 @@ class TripController extends Controller
 
         // get quick results
         $results = SearchWrapper::find($search->id);
+        $asyncResponse = $this->paginateWithoutKey($results, $id, 20, $request->query->get('page'));
 
-        $asyncResponse = new AsyncPageTrip([
-            'id' => $search->id,
-            'results' => array_slice($results, 0, 20),
-            'total' =>  count($results),
-        ]);
         return new JsonResponse($asyncResponse);
     }
 
@@ -108,12 +104,22 @@ class TripController extends Controller
         $trips = SearchWrapper::find($id);
 
 
-        $asyncResponse = $this->paginateWithoutKey($trips, $id, 5,$request->query->get('page') );
+        $asyncResponse = $this->paginateWithoutKey($trips, $id, 20, $request->query->get('page'));
 
         return new JsonResponse($asyncResponse, 200, [], JSON_UNESCAPED_SLASHES);
     }
 
-    public function paginateWithoutKey($items, $searchid, $perPage = 5, $page = null, $options = [])
+    public function poll_id(Request $request, $id)
+    {
+        // get quick results
+        $trips = SearchWrapper::find($id);
+
+        $return = array('total' => count($trips));
+
+        return $return;
+    }
+
+    public function paginateWithoutKey($items, $searchid, $perPage = 20, $page = null, $options = [])
     {
 
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
