@@ -1,0 +1,919 @@
+openapi: 3.0.1
+info:
+  title: Ride2Go HUB API
+  description: 'Ride2Go Ridesharing API for the connector hub.'
+  license:
+    name: Apache 2.0
+    url: 'http://springdoc.org'
+  version: '1'
+servers:
+  - url: 'https://r2g.api.dev.services.rd2g.de'
+    description: Generated server url
+tags:
+  - name: Trips
+    description: Trip handling
+paths:
+  '/trip/{id}':
+    get:
+      tags:
+        - Trips
+      description: Returns the trip with the given ID
+      operationId: getById_3
+      parameters:
+        - name: id
+          in: path
+          description: ID of the trip to find
+          required: true
+          schema:
+            type: string
+          example: 01234567-89ab-cdef-0123-456789abcdef
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TripDto'
+        '400':
+          description: Malformed ID
+          content: {}
+        '404':
+          description: Not existing ID
+          content: {}
+  /trip/search:
+    post:
+      tags:
+        - Trips
+      description: Trip searching
+      operationId: search_3
+      requestBody:
+        description: Search criteria
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Search'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsycPageTripDto'
+  /trip/search/{id}:
+    post:
+      tags:
+        - Trips
+      description: Trip searching
+      operationId: search_4
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Search criteria
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Search'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageTripDto'
+components:
+  schemas:
+    ContactPointDto:
+      type: object
+      properties:
+        created:
+          type: string
+          description: creation time of this object
+          format: date-time
+        modified:
+          type: string
+          description: last modification time of this object
+          format: date-time
+        deleted:
+          type: boolean
+          description: 'a flag, whether this object is deleted'
+        createdBy:
+          type: string
+          description: id of creator
+          format: uuid
+        modifiedBy:
+          type: string
+          description: id of modifier
+          format: uuid
+        id:
+          type: string
+          description: ID of this object
+          format: uuid
+        url:
+          type: string
+          description: URL of this object
+          format: url
+        additionalType:
+          type: string
+          description: additional type information
+        name:
+          type: string
+          description: name of this object
+        image:
+          type: string
+          description: an image of this object
+        description:
+          type: string
+          description: description of this object
+        email:
+          type: string
+          description: email
+        faxnumber:
+          type: string
+          description: fax
+        telephone:
+          type: string
+          description: telephone
+      description: represents a contact of a persona
+    DemandDto:
+      type: object
+      properties:
+        created:
+          type: string
+          description: creation time of this object
+          format: date-time
+        modified:
+          type: string
+          description: last modification time of this object
+          format: date-time
+        deleted:
+          type: boolean
+          description: 'a flag, whether this object is deleted'
+        createdBy:
+          type: string
+          description: id of creator
+          format: uuid
+        modifiedBy:
+          type: string
+          description: id of modifier
+          format: uuid
+        id:
+          type: string
+          description: ID of this object
+          format: uuid
+        url:
+          type: string
+          description: URL of this object
+          format: url
+        additionalType:
+          type: string
+          description: additional type information
+        name:
+          type: string
+          description: name of this object
+        image:
+          type: string
+          description: an image of this object
+        description:
+          type: string
+          description: description of this object
+        availability:
+          type: string
+          description: availability of this trip
+        availabilityStarts:
+          type: string
+          description: start of the availability
+          format: date-time
+        availabilityEnds:
+          type: string
+          description: end of the availability
+          format: date-time
+        subject:
+          $ref: '#/components/schemas/TripDto'
+        price:
+          type: integer
+          description: price of the trip
+          format: int64
+        priceCurrency:
+          type: string
+          description: currency of the price
+        marketActor:
+          $ref: '#/components/schemas/PersonaDto'
+      description: represents a trip demand
+    OfferDto:
+      type: object
+      properties:
+        created:
+          type: string
+          description: creation time of this object
+          format: date-time
+        modified:
+          type: string
+          description: last modification time of this object
+          format: date-time
+        deleted:
+          type: boolean
+          description: 'a flag, whether this object is deleted'
+        createdBy:
+          type: string
+          description: id of creator
+          format: uuid
+        modifiedBy:
+          type: string
+          description: id of modifier
+          format: uuid
+        id:
+          type: string
+          description: ID of this object
+          format: uuid
+        url:
+          type: string
+          description: URL of this object
+          format: url
+        additionalType:
+          type: string
+          description: additional type information
+        name:
+          type: string
+          description: name of this object
+        image:
+          type: string
+          description: an image of this object
+        description:
+          type: string
+          description: description of this object
+        availability:
+          type: string
+          description: availability of this trip
+        availabilityStarts:
+          type: string
+          description: start of the availability
+          format: date-time
+        availabilityEnds:
+          type: string
+          description: end of the availability
+          format: date-time
+        subject:
+          $ref: '#/components/schemas/TripDto'
+        price:
+          type: integer
+          description: price of the trip
+          format: int64
+        priceCurrency:
+          type: string
+          description: currency of the price
+        marketActor:
+          $ref: '#/components/schemas/PersonaDto'
+      description: represents a trip offer
+    ParticipationDto:
+      type: object
+      properties:
+        created:
+          type: string
+          description: creation time of this object
+          format: date-time
+        modified:
+          type: string
+          description: last modification time of this object
+          format: date-time
+        deleted:
+          type: boolean
+          description: 'a flag, whether this object is deleted'
+        createdBy:
+          type: string
+          description: id of creator
+          format: uuid
+        modifiedBy:
+          type: string
+          description: id of modifier
+          format: uuid
+        id:
+          type: string
+          description: ID of this object
+          format: uuid
+        url:
+          type: string
+          description: URL of this object
+          format: url
+        additionalType:
+          type: string
+          description: additional type information
+        name:
+          type: string
+          description: name of this object
+        image:
+          type: string
+          description: an image of this object
+        description:
+          type: string
+          description: description of this object
+        role:
+          type: string
+          description: role of the participant in this trip
+          enum:
+            - DRIVER
+            - OPERATOR
+            - PASSENGER
+        status:
+          type: string
+          description: participation status
+          enum:
+            - ACCEPTED
+            - REQUESTED
+            - REJECTED
+        participant:
+          $ref: '#/components/schemas/PersonaDto'
+      description: represents a trip participation
+    PersonaDto:
+      type: object
+      properties:
+        created:
+          type: string
+          description: creation time of this object
+          format: date-time
+        modified:
+          type: string
+          description: last modification time of this object
+          format: date-time
+        deleted:
+          type: boolean
+          description: 'a flag, whether this object is deleted'
+        createdBy:
+          type: string
+          description: id of creator
+          format: uuid
+        modifiedBy:
+          type: string
+          description: id of modifier
+          format: uuid
+        id:
+          type: string
+          description: ID of this object
+          format: uuid
+        url:
+          type: string
+          description: URL of this object
+          format: url
+        additionalType:
+          type: string
+          description: additional type information
+        name:
+          type: string
+          description: name of this object
+        image:
+          type: string
+          description: an image of this object
+        description:
+          type: string
+          description: description of this object
+        additionalName:
+          type: string
+          description: additional name of the persona
+        familyName:
+          type: string
+          description: femily name of the persona
+        givenName:
+          type: string
+          description: given name of the persona
+        gender:
+          type: string
+          description: gender of the persona
+          enum:
+            - MAN
+            - WOMAN
+            - G
+        contactPoints:
+          type: array
+          description: contacts of the persona
+          items:
+            $ref: '#/components/schemas/ContactPointDto'
+      description: 'Represents a persona. A Persona is a Character or Profile a User chooses to adapt. In most cases this will be a Profile of a Human, however it can also be used as Profile for technical users/machines or Organisations.'
+    TransportDto:
+      type: object
+      properties:
+        created:
+          type: string
+          description: creation time of this object
+          format: date-time
+        modified:
+          type: string
+          description: last modification time of this object
+          format: date-time
+        deleted:
+          type: boolean
+          description: 'a flag, whether this object is deleted'
+        createdBy:
+          type: string
+          description: id of creator
+          format: uuid
+        modifiedBy:
+          type: string
+          description: id of modifier
+          format: uuid
+        id:
+          type: string
+          description: ID of this object
+          format: uuid
+        url:
+          type: string
+          description: URL of this object
+          format: url
+        additionalType:
+          type: string
+          description: additional type information
+        name:
+          type: string
+          description: name of this object
+        image:
+          type: string
+          description: an image of this object
+        description:
+          type: string
+          description: description of this object
+        transportType:
+          type: string
+          description: type of vehicle
+          enum:
+            - CAR
+            - PLANE
+            - BOAT
+            - TRAIN
+        seatingCapacity:
+          type: integer
+          description: maximum number of seats (including driver)
+          format: int32
+        cargoVolume:
+          type: string
+          description: how many baggage can be transported
+          enum:
+            - SMALL
+            - MEDIUM
+            - LARGE
+            - HUGE
+        owner:
+          $ref: '#/components/schemas/PersonaDto'
+        operator:
+          $ref: '#/components/schemas/PersonaDto'
+        color:
+          type: string
+          description: color of the vehicle
+        manufacturer:
+          type: string
+          description: manufacturer of the vehicle
+        model:
+          type: string
+          description: model of the vehicle
+        modelDate:
+          type: string
+          description: release date of the vehicle model (things like "fall 2019" are valid)
+        registrationId:
+          type: string
+          description: registration ID of the vehicle
+      description: represents transport information of a trip
+    TripDto:
+      type: object
+      properties:
+        created:
+          type: string
+          description: creation time of this object
+          format: date-time
+        modified:
+          type: string
+          description: last modification time of this object
+          format: date-time
+        deleted:
+          type: boolean
+          description: 'a flag, whether this object is deleted'
+        createdBy:
+          type: string
+          description: id of creator
+          format: uuid
+        modifiedBy:
+          type: string
+          description: id of modifier
+          format: uuid
+        id:
+          type: string
+          description: ID of this object
+          format: uuid
+        url:
+          type: string
+          description: URL of this object
+          format: url
+        additionalType:
+          type: string
+          description: additional type information
+        name:
+          type: string
+          description: name of this object
+        image:
+          type: string
+          description: an image of this object
+        description:
+          type: string
+          description: description of this object
+        departureTime:
+          type: string
+          description: departure time of the trip
+          format: date-time
+        arrivalTime:
+          type: string
+          description: arrival time of the trip
+          format: date-time
+        transport:
+          $ref: '#/components/schemas/TransportDto'
+        participations:
+          type: array
+          description: participants
+          items:
+            $ref: '#/components/schemas/ParticipationDto'
+        availableSeats:
+          type: integer
+          description: the seats currently available to this trip. at most Transport.seatingCapacity -1 (driver)
+          format: int32
+        connector:
+          type: string
+          description: name of the connector
+        offer:
+          $ref: '#/components/schemas/OfferDto'
+        demand:
+          $ref: '#/components/schemas/DemandDto'
+        smoking:
+          type: string
+          description: smoking preferences of the trip
+          enum:
+            - 'YES'
+            - 'NO'
+            - FLEX
+        animals:
+          type: string
+          description: animal transport preferences of the trip
+          enum:
+            - 'YES'
+            - 'NO'
+            - ASK
+      description: represents a trip
+    GeoLocation:
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: latitude of the location
+          format: double
+        longitude:
+          type: number
+          description: longitude of the location
+          format: double
+      description: represents a location with its coordinates
+    PageRequest:
+      type: object
+      properties:
+        pageSize:
+          minimum: 1
+          type: integer
+          description: size of the page
+          format: int32
+        page:
+          minimum: 0
+          type: integer
+          description: index of the page (0 based)
+          format: int32
+        firstIndex:
+          type: integer
+          description: this page's first element's index within the whole dataset
+          format: int32
+      description: pagination request
+    SearchDto:
+      type: object
+      properties:
+        page:
+          $ref: '#/components/schemas/PageRequest'
+        tripTypes:
+          type: array
+          description: what kind of trips to look for
+          items:
+            type: string
+            description: what kind of trips to look for
+            enum:
+              - OFFER
+              - SEARCH
+        startPoint:
+          $ref: '#/components/schemas/SearchRadius'
+        endPoint:
+          $ref: '#/components/schemas/SearchRadius'
+        departure:
+          $ref: '#/components/schemas/TimeRangeDto'
+        arrival:
+          $ref: '#/components/schemas/TimeRangeDto'
+        reoccurDays:
+          type: array
+          description: on which days should the trip reoccur
+          items:
+            type: string
+            description: on which days should the trip reoccur
+            enum:
+              - MONDAY
+              - TUESDAY
+              - WEDNESDAY
+              - THURSDAY
+              - FRIDAY
+              - SATURDAY
+              - SUNDAY
+        smoking:
+          type: string
+          description: is smoking allowed (irrelevant by default)
+          enum:
+            - 'YES'
+            - 'NO'
+            - ASK
+            - IRRELEVANT
+        animals:
+          type: string
+          description: are animals allowed (irrelevant by default)
+          enum:
+            - 'YES'
+            - 'NO'
+            - ASK
+            - IRRELEVANT
+        transportTypes:
+          type: array
+          description: types of transport
+          items:
+            type: string
+            description: types of transport
+            enum:
+              - CAR
+              - PLANE
+              - BOAT
+              - TRAIN
+        baggage:
+          type: string
+          description: size of allowed baggage
+          enum:
+            - SMALL
+            - MEDIUM
+            - LARGE
+            - HUGE
+        gender:
+          type: string
+          description: desired gender of the driver (irrelevant by default)
+          enum:
+            - MAN
+            - WOMAN
+            - IRRELEVANT
+        organizations:
+          type: array
+          description: organization associatons
+          items:
+            type: string
+            description: organization associatons
+            enum:
+              - ADAC
+              - ACA
+              - ACL
+              - TCS
+              - TOURING
+        availabilityStarts:
+          type: string
+          description: start of the availability of the trip
+          format: date-time
+        availabilityEnds:
+          type: string
+          description: end of the availability of the trip
+          format: date-time
+      description: 'searching criteria, including pagination options'
+    SearchRadius:
+      type: object
+      properties:
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+        radius:
+          type: integer
+          description: area radius in kms
+          format: int64
+      description: represents a circular area
+    TimeRangeDto:
+      type: object
+      properties:
+        time:
+          type: string
+          description: mean of the time range
+          format: date-time
+        toleranceInDays:
+          type: integer
+          description: duration between the mean and the ends of the time range
+          format: int32
+      description: represents a time range
+    PageDemandDto:
+      type: object
+      properties:
+        results:
+          type: array
+          description: list of the resulting elements
+          items:
+            $ref: '#/components/schemas/DemandDto'
+        page:
+          $ref: '#/components/schemas/PageResponse'
+      description: holds a page
+    PageResponse:
+      type: object
+      properties:
+        pageSize:
+          minimum: 1
+          type: integer
+          description: size of the page
+          format: int32
+        page:
+          minimum: 0
+          type: integer
+          description: index of the page (0 based)
+          format: int32
+        totalCount:
+          type: integer
+          description: number of total hits
+          format: int32
+        lastIndex:
+          type: integer
+          description: this page's last element's index within the whole dataset
+          format: int32
+        first:
+          type: boolean
+          description: is this the first of all pages
+        last:
+          type: boolean
+          description: is this the last of all pages
+        firstIndex:
+          type: integer
+          description: this page's first element's index within the whole dataset
+          format: int32
+      description: holds information about a page
+    PageOfferDto:
+      type: object
+      properties:
+        results:
+          type: array
+          description: list of the resulting elements
+          items:
+            $ref: '#/components/schemas/OfferDto'
+        page:
+          $ref: '#/components/schemas/PageResponse'
+      description: holds a page
+    IntegerRange:
+      type: object
+      properties:
+        from:
+          type: integer
+          description: lower boundary
+          format: int64
+        to:
+          type: integer
+          description: upper boundary
+          format: int64
+      description: Represents a number range with integer boundaries. Both boundaries are optional and inclusive.
+    Search:
+      type: object
+      properties:
+        page:
+          $ref: '#/components/schemas/PageRequest'
+        tripTypes:
+          type: array
+          description: what kind of trips to look for
+          items:
+            type: string
+            description: what kind of trips to look for
+            enum:
+              - OFFER
+              - SEARCH
+        startPoint:
+          $ref: '#/components/schemas/SearchRadius'
+        endPoint:
+          $ref: '#/components/schemas/SearchRadius'
+        departure:
+          $ref: '#/components/schemas/TimeRange'
+        arrival:
+          $ref: '#/components/schemas/TimeRange'
+        reoccurDays:
+          type: array
+          description: on which days should the trip reoccur
+          items:
+            type: string
+            description: on which days should the trip reoccur
+            enum:
+              - MONDAY
+              - TUESDAY
+              - WEDNESDAY
+              - THURSDAY
+              - FRIDAY
+              - SATURDAY
+              - SUNDAY
+        smoking:
+          type: string
+          description: is smoking allowed (irrelevant by default)
+          enum:
+            - 'YES'
+            - 'NO'
+            - ASK
+            - IRRELEVANT
+        animals:
+          type: string
+          description: are animals allowed (irrelevant by default)
+          enum:
+            - 'YES'
+            - 'NO'
+            - ASK
+            - IRRELEVANT
+        transportTypes:
+          type: array
+          description: types of transport
+          items:
+            type: string
+            description: types of transport
+            enum:
+              - CAR
+              - PLANE
+              - BOAT
+              - TRAIN
+        baggage:
+          type: string
+          description: size of allowed baggage
+          enum:
+            - SMALL
+            - MEDIUM
+            - LARGE
+            - HUGE
+        gender:
+          type: string
+          description: desired gender of the driver (irrelevant by default)
+          enum:
+            - MAN
+            - WOMAN
+            - IRRELEVANT
+        organizations:
+          type: array
+          description: organization associatons
+          items:
+            type: string
+            description: organization associatons
+            enum:
+              - ADAC
+              - ACA
+              - ACL
+              - TCS
+              - TOURING
+        availabilityStarts:
+          type: string
+          description: start of the availability of the trip
+          format: date-time
+        availabilityEnds:
+          type: string
+          description: end of the availability of the trip
+          format: date-time
+      description: 'searching criteria, including pagination options'
+    TimeRange:
+      type: object
+      properties:
+        time:
+          type: string
+          description: mean of the time range
+          format: date-time
+        toleranceInDays:
+          type: integer
+          description: duration between the mean and the ends of the time range
+          format: int32
+      description: represents a time range
+    PageTripDto:
+      type: object
+      properties:
+        results:
+          type: array
+          description: list of the resulting elements
+          items:
+            $ref: '#/components/schemas/TripDto'
+        page:
+          $ref: '#/components/schemas/PageResponse'
+      description: holds a page
+    AsycPageTripDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of the search
+          format: uuid
+        results:
+          type: array
+          description: list of the resulting elements
+          items:
+            $ref: '#/components/schemas/TripDto'
+        page:
+          $ref: '#/components/schemas/PageResponse'
+
+  securitySchemes:
+    basicScheme:
+      type: http
+      scheme: basic
