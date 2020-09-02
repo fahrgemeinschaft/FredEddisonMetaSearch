@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Swagger UI</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{asset("css/swagger-ui.css")}}">
+    <link rel="stylesheet" type="text/css" href="{{secure_asset("css/swagger-ui.css")}}">
     <style>
         html
         {
@@ -31,8 +31,8 @@
 
 <body>
 <div id="swagger-ui"></div>
-<script src="{{ asset('js/swagger-ui-bundle.js')}}"></script>
-<script src="{{ asset('js/swagger-ui-standalone-preset.js')}}"></script>
+<script src="{{ secure_asset('js/swagger-ui-bundle.js')}}"></script>
+<script src="{{ secure_asset('js/swagger-ui-standalone-preset.js')}}"></script>
 <script>
     window.onload = function() {
 
