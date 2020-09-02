@@ -101,9 +101,10 @@ class TripController extends Controller
      */
     public function search_id(Request $request, $id)
     {
+        if ($request->get('only-total-number') == 'true')
+            return $this->poll_id($request, $id);
+
         $trips = SearchWrapper::find($id);
-
-
         $asyncResponse = $this->paginateWithoutKey($trips, $id, 20, $request->query->get('page'));
 
         return new JsonResponse($asyncResponse, 200, [], JSON_UNESCAPED_SLASHES);
@@ -113,9 +114,7 @@ class TripController extends Controller
     {
         // get quick results
         $trips = SearchWrapper::find($id);
-
         $return = array('total' => count($trips));
-
         return $return;
     }
 

@@ -22,5 +22,4 @@ Route::post('trip/search', 'TripController@search');
 Route::post('trip/search/{id}', 'TripController@search_id');
 Route::get('trip/search/{id}', 'TripController@search_id');
 Route::get('trip/search', 'TripController@search');
-Route::post('trip/poll/{id}', 'TripController@poll_id');
 
