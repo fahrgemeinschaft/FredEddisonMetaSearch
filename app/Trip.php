@@ -27,6 +27,7 @@ class Trip extends Model
         'name',
         'image',
         'description',
+        'departureTime',
         'arrivalTime',
         'availableSeats',
         'connector',
@@ -59,6 +60,7 @@ class Trip extends Model
         'created',
         'modified',
         'arrivalTime',
+        'departureTime',
     ];
 
     public function offer()

@@ -72,27 +72,31 @@ class MifazConnector implements ShouldQueue
 
         $entries = $client->getEntries($start['latitude'], $start['longitude'], $end['latitude'], $end['longitude'], $options);
 
-        $entries->each(function($entry) use ($search)
-        {
+        $entries->each(function ($entry) use ($search) {
+
             $trips = $this->convertEntryToTrips($entry, $search);
-            $trips->each(function($trip) { SearchWrapper::insert($trip); });
+
+            $trips->each(function ($trip) {
+                SearchWrapper::insert($trip);
+            });
         });
 
     }
 
     public function convertEntryToTrips($entry, $search): Collection
     {
-        return $this->findCorrespondingDates($entry, $search)->map(function($date) use (&$entry, &$search)
-        {
+        return $this->findCorrespondingDates($entry, $search)->map(function ($date) use (&$entry, &$search) {
             $tripStart = explode(' ', $entry['startcoord']);
             $tripEnd = explode(' ', $entry['goalcoord']);
             $trip = new Trip([
                 'created' => Carbon::create($entry['creationdate']),
                 'modified' => Carbon::create($entry['lastupdate']),
-                'startPoint' => new GeoLocation(['latitude' => $tripStart[0], 'longitude' => $tripStart[1]]),
-                'endPoint' => new GeoLocation(['latitude' => $tripEnd[0], 'longitude' => $tripEnd[1]]),
+                'startPoint' => new GeoLocation(['latitude' => $tripStart[0], 'longitude' => $tripStart[1], 'name' => $entry['startloc']]),
+                'endPoint' => new GeoLocation(['latitude' => $tripEnd[0], 'longitude' => $tripEnd[1], 'name' => $entry['goalloc']]),
                 'connector' => "Mifaz",
-                'timestamp' => Carbon::now()
+                'timestamp' => Carbon::now(),
+                'departureTime' => $date->copy()->setTime(...explode(':', $entry['starttimebegin'])),
+                'arrivalTime' => $date->copy()->setTime(...explode(':', $entry['starttimeend']))
             ]);
 
             $trip->setAttribute('id', 'mifaz-' . $entry['id'] . '-' . $date->format('Ymd'));
@@ -117,27 +121,30 @@ class MifazConnector implements ShouldQueue
         });
     }
 
-    public function findCorrespondingDates($entry, $search): Collection {
+    public function findCorrespondingDates($entry, $search): Collection
+    {
         // single trip
-        if (isset($entry['regulary']) && $entry['regulary'] == '0')
-        {
+        if (isset($entry['regulary']) && $entry['regulary'] == '0') {
             $date = isset($entry['journeydate']) ? Carbon::create($entry['journeydate']) : Carbon::now();
             return collect([$date]);
         }
 
         // no offer, only search
-        if (isset($entry['type']) && $entry['type'] == '0')
-        {
+        if (isset($entry['type']) && $entry['type'] == '0') {
             return collect();
         }
 
         $dates = [];
 
         // just assume empty times mean every weekday?!
-        if ($entry['times'] == '') { $entry['times'] = 'Mo,Di,Mi,Do,Fr,Sa,So'; }
+        if ($entry['times'] == '') {
+            $entry['times'] = 'Mo,Di,Mi,Do,Fr,Sa,So';
+        }
 
         $exploded = explode(',', $entry['times']);
-        $weekdays = array_map(function ($w) { return self::WEEKDAYS[$w]; }, $exploded);
+        $weekdays = array_map(function ($w) {
+            return self::WEEKDAYS[$w];
+        }, $exploded);
         $timeRange = $search->getDepartureRange();
         $currDay = $timeRange[0]->copy();
 
@@ -145,10 +152,11 @@ class MifazConnector implements ShouldQueue
             if (in_array($currDay->weekday(), $weekdays)) {
                 $dates[] = $currDay->copy();
             }
-
             $currDay->add(1, 'day');
         }
-
+        if($timeRange[0]==$timeRange[1]){
+            $dates[] = $timeRange[0];
+        }
         return collect($dates);
     }
 }

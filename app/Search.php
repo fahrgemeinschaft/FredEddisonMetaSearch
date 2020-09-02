@@ -63,20 +63,9 @@ class Search extends Model
     public function getDepartureRange(): array
     {
         $tolerance = $this->departure['toleranceInDays'];
-
         $rangeStart = Carbon::createFromTimeString($this->departure['time'])->addDays($tolerance * -1)->startOfDay();
         $rangeEnd = Carbon::createFromTimeString($this->departure['time'])->addDays($tolerance)->startOfDay();
 
         return [$rangeStart, $rangeEnd];
     }
-//
-//    public function toJson($options = 0)
-//    {
-//        /** @var ParameterBag $json */
-//        $json = parent::toJson($options);
-//
-//        $json->set('startPoint', $this->startPoint->)
-//    }
-
-
 }

@@ -16,6 +16,7 @@ class GeoLocation extends Model
     protected $fillable = [
         'latitude',
         'longitude',
+        'name',
     ];
 
     /**
@@ -31,5 +32,6 @@ class GeoLocation extends Model
     protected $visible = [
         'latitude',
         'longitude',
+        'name',
     ];
 }

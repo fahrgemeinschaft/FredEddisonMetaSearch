@@ -84,7 +84,9 @@ class BessermitfahrenConnector implements ShouldQueue
             'startPoint' => new GeoLocation(['latitude' => $tripStart['latitude'], 'longitude' => $tripStart['longitude']]),
             'endPoint' => new GeoLocation(['latitude' => $tripEnd['latitude'], 'longitude' => $tripEnd['longitude']]),
             'connector' => "Bessermitfahren",
-            'timestamp' => Carbon::now()
+            'timestamp' => Carbon::now(),
+            'departureTime' => Carbon::parse($search->departure['time'])->setTime(...explode(':',$entry[0][1][0])),
+            'arrivalTime' => Carbon::parse($search->departure['time'])->setTime(...explode(':',$entry[0][2][0])),
         ]);
 
         $trip->setAttribute('id', 'bessermitfahren-' .  md5($entry[0][0]));
@@ -93,8 +95,8 @@ class BessermitfahrenConnector implements ShouldQueue
             'url' => $entry[0][0],
             'name' => '',
             'image' => '',
-            'availabilityStarts' => $search->departure['time'],
-            'availabilityEnds' => $search->departure['time']
+            'availabilityStarts' => Carbon::parse($search->departure['time'])->setTime(...explode(':',$entry[0][1][0])),
+            'availabilityEnds' => Carbon::parse($search->departure['time'])->setTime(...explode(':',$entry[0][2][0])),
         ]);
 
         $transport = new Transport([

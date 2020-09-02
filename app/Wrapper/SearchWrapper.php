@@ -5,6 +5,8 @@ namespace App\Wrapper;
 
 use App\Search;
 use App\Trip;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Cache;
 use Ds\Set;
@@ -45,7 +47,6 @@ class SearchWrapper
 
         if ($search != null) {
 
-
             $trip_start = Redis::geoRadius(
                 'trip_start',
                 $search->startPoint->location->longitude,
@@ -53,7 +54,6 @@ class SearchWrapper
                 $search->startPoint->radius,
                 "km"
             );
-
             $trip_end = Redis::geoRadius(
                 'trip_end',
                 $search->endPoint->location->longitude,
@@ -61,7 +61,6 @@ class SearchWrapper
                 $search->endPoint->radius,
                 "km"
             );
-
             $start_set = new Set($trip_start);
             $end_set = new Set($trip_end);
 
@@ -75,7 +74,11 @@ class SearchWrapper
             if (count($keys) != 0) {
                 $trips = collect();
                 foreach (array_filter(array_values(Cache::many($keys))) as $trip) {
-                    $trips->push($trip);
+                    $search_start = Carbon::parse($search->departure['time'])->addDays(-$search->departure['toleranceInDays']);
+                    $search_end = Carbon::parse($search->departure['time'])->addDays($search->departure['toleranceInDays']);
+
+                    if ($trip->offer->availabilityStarts >= $search_start && $trip->offer->availabilityStarts <= $search_end)
+                        $trips->push($trip);
                 }
                 $trips->sortByDesc('timestamp');
                 return $trips->toArray();
