@@ -65,7 +65,6 @@ class Search extends Model
         $tolerance = $this->departure['toleranceInDays'];
         $rangeStart = Carbon::createFromTimeString($this->departure['time'])->addDays($tolerance * -1)->startOfDay();
         $rangeEnd = Carbon::createFromTimeString($this->departure['time'])->addDays($tolerance)->startOfDay();
-
         return [$rangeStart, $rangeEnd];
     }
 }

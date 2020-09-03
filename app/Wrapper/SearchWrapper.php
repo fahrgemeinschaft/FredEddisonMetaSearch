@@ -75,10 +75,10 @@ class SearchWrapper
                 $trips = collect();
                 foreach (array_filter(array_values(Cache::many($keys))) as $trip) {
                     $search_start = Carbon::parse($search->departure['time'])->addDays(-$search->departure['toleranceInDays']);
-                    $search_end = Carbon::parse($search->departure['time'])->addDays($search->departure['toleranceInDays']);
-
-                    if ($trip->offer->availabilityStarts >= $search_start && $trip->offer->availabilityStarts <= $search_end)
+                    $search_end = Carbon::parse($search->departure['time'])->addDays($search->departure['toleranceInDays'])->endOfDay();
+                    if ($trip->offer->availabilityStarts >= $search_start && $trip->offer->availabilityStarts <= $search_end){
                         $trips->push($trip);
+                    }
                 }
                 $trips->sortByDesc('timestamp');
                 return $trips->toArray();
@@ -86,6 +86,4 @@ class SearchWrapper
             } else return [];
         } else return [];
     }
-
-
 }
