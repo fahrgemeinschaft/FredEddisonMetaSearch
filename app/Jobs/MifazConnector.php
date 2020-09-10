@@ -71,11 +71,8 @@ class MifazConnector implements ShouldQueue
         ];
 
         $entries = $client->getEntries($start['latitude'], $start['longitude'], $end['latitude'], $end['longitude'], $options);
-
         $entries->each(function ($entry) use ($search) {
-
             $trips = $this->convertEntryToTrips($entry, $search);
-
             $trips->each(function ($trip) {
                 SearchWrapper::insert($trip);
             });
@@ -95,8 +92,8 @@ class MifazConnector implements ShouldQueue
                 'endPoint' => new GeoLocation(['latitude' => $tripEnd[0], 'longitude' => $tripEnd[1], 'name' => $entry['goalloc']]),
                 'connector' => "Mifaz",
                 'timestamp' => Carbon::now(),
-                'departureTime' => $date->copy()->setTime(...explode(':', $entry['starttimebegin'])),
-                'arrivalTime' => $date->copy()->setTime(...explode(':', $entry['starttimeend']))
+                'departureTime' => $entry['starttimebegin'] == '00:00'?null:$date->copy()->setTime(...explode(':', $entry['starttimebegin'])),
+                'arrivalTime' =>  $entry['starttimeend'] == '23:59'?null:$date->copy()->setTime(...explode(':', $entry['starttimeend']))
             ]);
 
             $trip->setAttribute('id', 'mifaz-' . $entry['id'] . '-' . $date->format('Ymd'));
