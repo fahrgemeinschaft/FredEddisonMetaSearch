@@ -100,6 +100,7 @@ class BessermitfahrenConnector implements ShouldQueue
             'name' => '',
             'image' => '',
             'price' => $entry[0][3],
+            'priceCurrency' => '€',
             'availabilityStarts' => Carbon::parse($search->departure['time'])->setTime(...explode(':', $entry[0][1][0])),
             'availabilityEnds' => Carbon::parse($search->departure['time'])->setTime(...explode(':', $entry[0][2][0])),
         ]);
