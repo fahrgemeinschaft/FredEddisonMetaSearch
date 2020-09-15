@@ -76,7 +76,9 @@ class TripController extends Controller
             $search->setAttribute('id', $id);
 
         } else {
-            $search = factory(Search::class)->make(); //TODO: error handling now factory
+            $return['title'] = 'Error 422 -  Unprocessable Entity';
+            $return['name'] = 'startPoint and endPoint are required';
+            return response()->json($return, 422);
         }
 
         SearchWrapper::save($search);
