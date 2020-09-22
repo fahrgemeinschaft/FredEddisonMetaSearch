@@ -43,7 +43,7 @@ class Bessermitfahren
         $this->lastResponse = $response;
         $content = (string)$response->getBody();
         if (!empty($content)) {
-            return collect(json_decode($content, true)['resultset']);
+            return collect(json_decode($content, true));
         } else {
             return false;
         }

@@ -60,8 +60,11 @@ class BessermitfahrenConnector implements ShouldQueue
 
         $entries = $client->getEntries($start['latitude'], $start['longitude'], $end['latitude'], $end['longitude'], $options);
 
-        $entries->each(function ($entry) use ($search) {
-            $trips = $this->convertEntryToTrips($entry, $search);
+
+        $details = $entries['resultset'];
+        $places = $entries['places'];
+        $details->each(function ($entry) use ($search, $places) {
+            $trips = $this->convertEntryToTrips($entry, $search,$places);
             //TODO:: Filter anwenden
             $trips->each(function ($trip) {
                 SearchWrapper::insert($trip);
@@ -70,7 +73,7 @@ class BessermitfahrenConnector implements ShouldQueue
 
     }
 
-    public function convertEntryToTrips($entry, $search): Collection
+    public function convertEntryToTrips($entry, $search, $places): Collection
     {
         $trips = collect();
         $date = Carbon::createFromTimeString($search->departure['time']);
@@ -82,8 +85,8 @@ class BessermitfahrenConnector implements ShouldQueue
         $trip = new Trip([
             'created' => Carbon::now(),
             'modified' => Carbon::now(),
-            'startPoint' => new GeoLocation(['latitude' => $tripStart['latitude'], 'longitude' => $tripStart['longitude']]),
-            'endPoint' => new GeoLocation(['latitude' => $tripEnd['latitude'], 'longitude' => $tripEnd['longitude']]),
+            'startPoint' => new GeoLocation(['latitude' => $tripStart['latitude'], 'longitude' => $tripStart['longitude'],'name' =>  $places[$entry[0][1][1]]] ),
+            'endPoint' => new GeoLocation(['latitude' => $tripEnd['latitude'], 'longitude' => $tripEnd['longitude'],'name' =>  $places[$entry[0][2][1]]] ),
             'connector' => "Bessermitfahren",
             'timestamp' => Carbon::now(),
             'departureTime' => Carbon::parse($search->departure['time'])->setTime(...explode(':', $entry[0][1][0])),
