@@ -63,14 +63,12 @@ class BessermitfahrenConnector implements ShouldQueue
 
         $details = $entries['resultset'];
         $places = $entries['places'];
-        $details->each(function ($entry) use ($search, $places) {
+        foreach( $details as $entry) {
             $trips = $this->convertEntryToTrips($entry, $search,$places);
-            //TODO:: Filter anwenden
             $trips->each(function ($trip) {
                 SearchWrapper::insert($trip);
             });
-        });
-
+        };
     }
 
     public function convertEntryToTrips($entry, $search, $places): Collection
