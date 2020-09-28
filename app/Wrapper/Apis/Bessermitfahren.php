@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Bessermitfahren
 {
@@ -42,6 +43,7 @@ class Bessermitfahren
 
         $this->lastResponse = $response;
         $content = (string)$response->getBody();
+        Log::info("Bessermitfahren:" . $content);
         if (!empty($content)) {
             return collect(json_decode($content, true));
         } else {

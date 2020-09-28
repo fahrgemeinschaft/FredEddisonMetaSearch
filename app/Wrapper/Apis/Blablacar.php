@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Blablacar
 {
@@ -43,7 +44,7 @@ class Blablacar
         $this->lastResponse = $response;
 
         $content = (string)$response->getBody();
-
+        Log::info("Blablacar:" . $content);
         if (!empty($content)) {
             return collect(json_decode($content, true)['trips']);
         } else {

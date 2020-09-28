@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Mifaz
 {
@@ -32,6 +33,8 @@ class Mifaz
         $this->lastResponse = $response;
 
         $content = (string) $response->getBody();
+
+        Log::info("Mifaz:" . $content);
 
         if (!empty($content)) {
             return collect(json_decode($content, true)['entries']);

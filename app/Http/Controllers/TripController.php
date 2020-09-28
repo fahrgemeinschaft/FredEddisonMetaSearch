@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
 
 class TripController extends Controller
@@ -40,6 +41,7 @@ class TripController extends Controller
     public function search(Request $request)
     {
         $data = json_decode($request->getContent(), true);
+        Log::info("search:" . $data);
 
         if (isset($data['startPoint']) && isset($data['endPoint'])) {
             $search = new Search();

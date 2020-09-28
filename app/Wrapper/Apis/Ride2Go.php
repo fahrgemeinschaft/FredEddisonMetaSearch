@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Ride2Go
 {
@@ -91,6 +92,8 @@ class Ride2Go
         $this->lastResponse = $response;
 
         $content = (string) $response->getBody();
+
+        Log::info("Ride2Go:" . $content);
 
         if (!empty($content)) {
             return collect(json_decode($content, true)['results']);
