@@ -43,7 +43,7 @@ class Bessermitfahren
 
         $this->lastResponse = $response;
         $content = (string)$response->getBody();
-        Log::info("Bessermitfahren:" . $content);
+        Log::info("Bessermitfahren:" . var_dump($content));
         if (!empty($content)) {
             return collect(json_decode($content, true));
         } else {

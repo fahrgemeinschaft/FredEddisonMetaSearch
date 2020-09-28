@@ -44,7 +44,7 @@ class Blablacar
         $this->lastResponse = $response;
 
         $content = (string)$response->getBody();
-        Log::info("Blablacar:" . $content);
+        Log::info("Blablacar:" . var_dump($content));
         if (!empty($content)) {
             return collect(json_decode($content, true)['trips']);
         } else {
