@@ -93,7 +93,7 @@ class Ride2Go
 
         $content = (string) $response->getBody();
 
-        Log::info("Ride2Go:" . var_dump($content));
+        Log::info("Ride2Go:" . $content);
 
         if (!empty($content)) {
             return collect(json_decode($content, true)['results']);

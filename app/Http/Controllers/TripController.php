@@ -40,8 +40,9 @@ class TripController extends Controller
      */
     public function search(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
-        Log::info("search:" . var_dump($data));
+        $data = $request->getContent();
+        Log::info("search:" . $data);
+        $data = json_decode($data, true);
 
         if (isset($data['startPoint']) && isset($data['endPoint'])) {
             $search = new Search();

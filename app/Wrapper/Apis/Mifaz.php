@@ -34,7 +34,7 @@ class Mifaz
 
         $content = (string) $response->getBody();
 
-        Log::info("Mifaz:" . var_dump($content));
+        Log::info("Mifaz:" . $content);
 
         if (!empty($content)) {
             return collect(json_decode($content, true)['entries']);
