@@ -15,6 +15,7 @@ trait UsesUuid
         });
     }
 
+    
     public function getIncrementing()
     {
         return false;
