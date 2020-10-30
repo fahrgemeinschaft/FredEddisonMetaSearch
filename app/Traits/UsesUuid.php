@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Traits;
+namespace App\Traits;
 
 use Illuminate\Support\Str;
 
@@ -15,7 +15,7 @@ trait UsesUuid
         });
     }
 
-    
+
     public function getIncrementing()
     {
         return false;

@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Models\Traits\UsesUuid;
+use App\Traits\UsesUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\ParameterBag;
