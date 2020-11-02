@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Models\Traits\UsesUuid;
+use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class TimeRange extends Model
