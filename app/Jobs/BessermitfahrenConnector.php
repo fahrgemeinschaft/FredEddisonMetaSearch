@@ -60,15 +60,16 @@ class BessermitfahrenConnector implements ShouldQueue
 
         $entries = $client->getEntries($start['latitude'], $start['longitude'], $end['latitude'], $end['longitude'], $options);
 
-
-        $details = $entries['resultset'];
-        $places = $entries['places'];
-        foreach( $details as $entry) {
-            $trips = $this->convertEntryToTrips($entry, $search,$places);
-            $trips->each(function ($trip) {
-                SearchWrapper::insert($trip);
-            });
-        };
+        if (count($entries) != 0) {
+            $details = $entries['resultset'];
+            $places = $entries['places'];
+            foreach ($details as $entry) {
+                $trips = $this->convertEntryToTrips($entry, $search, $places);
+                $trips->each(function ($trip) {
+                    SearchWrapper::insert($trip);
+                });
+            };
+        }
     }
 
     public function convertEntryToTrips($entry, $search, $places): Collection
@@ -83,15 +84,15 @@ class BessermitfahrenConnector implements ShouldQueue
         $trip = new Trip([
             'created' => Carbon::now(),
             'modified' => Carbon::now(),
-            'startPoint' => new GeoLocation(['latitude' => $tripStart['latitude'], 'longitude' => $tripStart['longitude'],'name' =>  $places[$entry[0][1][1]]] ),
-            'endPoint' => new GeoLocation(['latitude' => $tripEnd['latitude'], 'longitude' => $tripEnd['longitude'],'name' =>  $places[$entry[0][2][1]]] ),
+            'startPoint' => new GeoLocation(['latitude' => $tripStart['latitude'], 'longitude' => $tripStart['longitude'], 'name' => $places[$entry[0][1][1]]]),
+            'endPoint' => new GeoLocation(['latitude' => $tripEnd['latitude'], 'longitude' => $tripEnd['longitude'], 'name' => $places[$entry[0][2][1]]]),
             'connector' => "Bessermitfahren",
             'timestamp' => Carbon::now(),
             'departureTime' => Carbon::parse($search->departure['time'])->setTime(...explode(':', $entry[0][1][0])),
             'arrivalTime' => Carbon::parse($search->departure['time'])->setTime(...explode(':', $entry[0][2][0])),
             'availableSeats' => $entry[0][4],
-            'smoking' =>  $this->getbitmask( $entry[0][6],1)? 'YES' : 'NO',
-            'animals' =>  $this->getbitmask( $entry[0][6],2)? 'YES' : 'NO',
+            'smoking' => $this->getbitmask($entry[0][6], 1) ? 'YES' : 'NO',
+            'animals' => $this->getbitmask($entry[0][6], 2) ? 'YES' : 'NO',
         ]);
 
         $trip->setAttribute('id', 'bessermitfahren-' . md5($entry[0][0]));
@@ -107,7 +108,7 @@ class BessermitfahrenConnector implements ShouldQueue
         ]);
 
         $transport = new Transport([
-            'transportType' =>  $this->getbitmask( $entry[0][6],4) ? 'TRAIN' : 'CAR'
+            'transportType' => $this->getbitmask($entry[0][6], 4) ? 'TRAIN' : 'CAR'
         ]);
 
         $trip->setAttribute('offer', $offer);

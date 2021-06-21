@@ -4,7 +4,9 @@
 namespace App\Wrapper\Apis;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\TransferStats;
+use http\Exception;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -28,8 +30,9 @@ class Ride2Go
     private $client;
     private $lastResponse;
 
-    function __construct() {
-        $this->client = resolve(Client::class, ['config' => ['base_uri' => self::API_ENDPOINT ]]);
+    function __construct()
+    {
+        $this->client = resolve(Client::class, ['config' => ['base_uri' => self::API_ENDPOINT]]);
     }
 
     public function getEntries($startLat, $startLng, $endLat, $endLng, $options = []): Collection
@@ -61,7 +64,9 @@ class Ride2Go
         }
 
         $options = array_merge(self::DEFAULT_OPTIONS, $options);
-        $params =  array_filter(array_merge($options, $params), function($value) { return !is_null($value) && $value !== ''; });
+        $params = array_filter(array_merge($options, $params), function ($value) {
+            return !is_null($value) && $value !== '';
+        });
 
         if (!empty($params['transportTypes']) && is_string($params['transportTypes'])) {
             $params['transportTypes'] = [$params['transportTypes']];
@@ -81,25 +86,32 @@ class Ride2Go
             $params['availabilityEnds'] = $params['availabilityEnds']->format('c');
         }
 
-        $response = $this->client->post('trip/search', [
-            'headers' => [
-                'accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ],
-            'json' => $params
-        ]);
+        try {
+            $response = $this->client->post('trip/search', [
+                'headers' => [
+                    'accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $params
+            ]);
+            $this->lastResponse = $response;
 
-        $this->lastResponse = $response;
+            $content = (string)$response->getBody();
 
-        $content = (string) $response->getBody();
+            Log::info("Ride2Go:" . $content);
 
-        Log::info("Ride2Go:" . $content);
+            if (!empty($content)) {
+                return collect(json_decode($content, true)['results']);
+            } else {
+                return false;
+            }
 
-        if (!empty($content)) {
-            return collect(json_decode($content, true)['results']);
-        } else {
-            return false;
         }
+        catch (ServerException $e){
+            Log::error("Ride2Go: API not available:".$e);
+            return collect();
+        }
+
 
     }
 
